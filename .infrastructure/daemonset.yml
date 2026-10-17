@@ -1,27 +1,29 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: kube2py
+  name: todoapp-daemonset
   namespace: mateapp
   labels:
-    app: kube2py
+    app: todoapp-daemonset
 spec:
   selector:
     matchLabels:
-      app: mate-server
-  template: 
+      app: todoapp-daemonset
+  template:
     metadata:
-      labels: 
-        app: mate-server
+      labels:
+        app: todoapp-daemonset
     spec:
       containers:
         - name: curl
-          image: radial/busyboxplus:curl
+          image: busyboxplus:curl
+          imagePullPolicy: IfNotPresent
           command: ["/bin/sh", "-c"]
           args:
             - |
               while true; do
-                curl -s -o /dev/null -w "%{http_code}\n" http://todoapp-service.mateapp.svc.cluster.local:80/
+                curl -s http://todoapp-service.mateapp.svc.cluster.local:80/api/health
+                echo
                 sleep 5
               done
           resources:
